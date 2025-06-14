@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { ArrowDown, Calendar, Clock, Bell } from 'lucide-react';
+import { ArrowDown, Calendar, Clock, Bell, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface TaskManagerProps {
@@ -26,6 +26,9 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
   ]);
   const [newTask, setNewTask] = useState('');
   const [newTime, setNewTime] = useState('');
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editTime, setEditTime] = useState('');
   const { toast } = useToast();
 
   const addTask = () => {
@@ -40,11 +43,84 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
       setTasks(prev => [...prev, task].sort((a, b) => a.time.localeCompare(b.time)));
       setNewTask('');
       setNewTime('');
+      
+      // إعداد تنبيهات كل 12 ساعة
+      scheduleTaskReminders(task);
+      
       toast({
         title: "✅ تمت الإضافة",
-        description: "تم إضافة المهمة بنجاح",
+        description: "تم إضافة المهمة بنجاح مع تنبيهات كل 12 ساعة",
       });
     }
+  };
+
+  const scheduleTaskReminders = (task: Task) => {
+    const [hours, minutes] = task.time.split(':').map(Number);
+    const taskDate = new Date();
+    taskDate.setHours(hours, minutes, 0, 0);
+    
+    // تنبيه صباحي (8 صباحاً)
+    const morningReminder = new Date(taskDate);
+    morningReminder.setHours(8, 0, 0, 0);
+    
+    // تنبيه مسائي (8 مساءً)  
+    const eveningReminder = new Date(taskDate);
+    eveningReminder.setHours(20, 0, 0, 0);
+    
+    const now = new Date();
+    
+    // جدولة التنبيه الصباحي
+    if (morningReminder > now) {
+      setTimeout(() => {
+        toast({
+          title: "🌅 تذكير صباحي",
+          description: `لا تنس: ${task.title}`,
+          duration: 10000,
+        });
+      }, morningReminder.getTime() - now.getTime());
+    }
+    
+    // جدولة التنبيه المسائي
+    if (eveningReminder > now) {
+      setTimeout(() => {
+        toast({
+          title: "🌙 تذكير مسائي", 
+          description: `تذكير: ${task.title}`,
+          duration: 10000,
+        });
+      }, eveningReminder.getTime() - now.getTime());
+    }
+  };
+
+  const startEditTask = (task: Task) => {
+    setEditingTask(task);
+    setEditTitle(task.title);
+    setEditTime(task.time);
+  };
+
+  const saveEditTask = () => {
+    if (editingTask && editTitle.trim() && editTime) {
+      setTasks(prev => prev.map(task => 
+        task.id === editingTask.id 
+          ? { ...task, title: editTitle.trim(), time: editTime }
+          : task
+      ).sort((a, b) => a.time.localeCompare(b.time)));
+      
+      setEditingTask(null);
+      setEditTitle('');
+      setEditTime('');
+      
+      toast({
+        title: "✏️ تم التحديث",
+        description: "تم تحديث المهمة بنجاح",
+      });
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingTask(null);
+    setEditTitle('');
+    setEditTime('');
   };
 
   const toggleTask = (id: string) => {
@@ -160,43 +236,86 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
                         : 'bg-white border-emerald-100 hover:border-emerald-200'
                     }`}
                   >
-                    <div className="flex items-center space-x-reverse space-x-3 flex-1">
-                      <input
-                        type="checkbox"
-                        checked={task.completed}
-                        onChange={() => toggleTask(task.id)}
-                        className="w-5 h-5 text-emerald-500 rounded"
-                      />
-                      <div className="flex-1">
-                        <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
-                          {task.title}
-                        </h3>
-                        <div className="flex items-center space-x-reverse space-x-2 mt-1">
-                          <Clock className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm text-gray-500">{task.time}</span>
-                          <span className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(task.priority)}`}>
-                            {task.priority === 'high' ? 'عالية' : task.priority === 'medium' ? 'متوسطة' : 'منخفضة'}
-                          </span>
+                    {editingTask?.id === task.id ? (
+                      <div className="flex items-center space-x-reverse space-x-3 flex-1">
+                        <input
+                          type="checkbox"
+                          checked={task.completed}
+                          onChange={() => toggleTask(task.id)}
+                          className="w-5 h-5 text-emerald-500 rounded"
+                        />
+                        <div className="flex-1 space-y-2">
+                          <Input
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            className="text-right"
+                            placeholder="عنوان المهمة"
+                          />
+                          <div className="flex items-center space-x-reverse space-x-2">
+                            <Input
+                              type="time"
+                              value={editTime}
+                              onChange={(e) => setEditTime(e.target.value)}
+                              className="w-32"
+                            />
+                            <Button size="sm" onClick={saveEditTask} className="bg-green-500 hover:bg-green-600">
+                              حفظ
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={cancelEdit}>
+                              إلغاء
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center space-x-reverse space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-gray-400 hover:text-gray-600"
-                      >
-                        <Bell className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteTask(task.id)}
-                        className="text-red-400 hover:text-red-600"
-                      >
-                        🗑️
-                      </Button>
-                    </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center space-x-reverse space-x-3 flex-1">
+                          <input
+                            type="checkbox"
+                            checked={task.completed}
+                            onChange={() => toggleTask(task.id)}
+                            className="w-5 h-5 text-emerald-500 rounded"
+                          />
+                          <div className="flex-1">
+                            <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                              {task.title}
+                            </h3>
+                            <div className="flex items-center space-x-reverse space-x-2 mt-1">
+                              <Clock className="w-4 h-4 text-gray-400" />
+                              <span className="text-sm text-gray-500">{task.time}</span>
+                              <span className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(task.priority)}`}>
+                                {task.priority === 'high' ? 'عالية' : task.priority === 'medium' ? 'متوسطة' : 'منخفضة'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-reverse space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => startEditTask(task)}
+                            className="text-blue-400 hover:text-blue-600"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-gray-400 hover:text-gray-600"
+                          >
+                            <Bell className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteTask(task.id)}
+                            className="text-red-400 hover:text-red-600"
+                          >
+                            🗑️
+                          </Button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))
               )}
