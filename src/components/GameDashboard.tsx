@@ -8,6 +8,7 @@ import TaskManager from '@/components/TaskManager';
 import GameSession from '@/components/GameSession';
 import DailyReport from '@/components/DailyReport';
 import GameStore from '@/components/GameStore';
+import PersonalityAnalysis from '@/components/PersonalityAnalysis';
 import { useToast } from '@/hooks/use-toast';
 
 interface GameDashboardProps {
@@ -16,7 +17,7 @@ interface GameDashboardProps {
 }
 
 const GameDashboard = ({ user, onLogout }: GameDashboardProps) => {
-  const [currentTab, setCurrentTab] = useState<'home' | 'session' | 'tasks' | 'report' | 'store'>('home');
+  const [currentTab, setCurrentTab] = useState<'home' | 'session' | 'tasks' | 'report' | 'store' | 'analysis'>('home');
   const [gameType, setGameType] = useState<'farm' | 'fishing'>('farm');
   const [coins, setCoins] = useState(150);
   const [level, setLevel] = useState(1);
@@ -80,6 +81,10 @@ const GameDashboard = ({ user, onLogout }: GameDashboardProps) => {
 
   if (currentTab === 'store') {
     return <GameStore coins={coins} onPurchase={spendCoins} onBack={() => setCurrentTab('home')} />;
+  }
+
+  if (currentTab === 'analysis') {
+    return <PersonalityAnalysis onBack={() => setCurrentTab('home')} />;
   }
 
   return (
@@ -218,13 +223,14 @@ const GameDashboard = ({ user, onLogout }: GameDashboardProps) => {
           </Button>
 
           <Button 
+            onClick={() => setCurrentTab('analysis')}
             variant="outline"
             className="h-16 border-2 border-orange-200 hover:border-orange-300 hover:bg-orange-50"
           >
             <User className="w-6 h-6 ml-2" />
             <div className="text-right">
-              <div className="font-bold">تحليل المزاج</div>
-              <div className="text-xs opacity-80">قريباً</div>
+              <div className="font-bold">تحليل الشخصية</div>
+              <div className="text-xs opacity-80">اكتشف نفسك</div>
             </div>
           </Button>
         </div>
