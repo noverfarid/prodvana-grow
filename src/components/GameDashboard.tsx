@@ -148,78 +148,131 @@ const GameDashboard = ({ user, language, onLogout }: GameDashboardProps) => {
         );
       default:
         return (
-          <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 p-4">
-            <div className="max-w-4xl mx-auto space-y-6">
-              {/* Header Section */}
-              <Card className="bg-white/80 backdrop-blur-sm shadow-md">
-                <CardHeader className="flex items-center justify-between">
+          <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-6xl mx-auto">
+              
+              {/* Header */}
+              <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <Avatar>
+                    <Avatar className="h-16 w-16">
                       <AvatarImage src={`https://avatar.vercel.sh/${user?.name}.png`} />
-                      <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
+                      <AvatarFallback className="text-xl">{user?.name?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <CardTitle className="text-lg font-semibold">{user?.name}</CardTitle>
-                      <p className="text-sm text-gray-500">{language === 'ar' ? 'المستوى' : 'Level'} {level}</p>
+                      <h1 className="text-2xl font-bold text-gray-900">{language === 'ar' ? 'أهلاً' : 'Welcome'} {user?.name}</h1>
+                      <p className="text-gray-600">{language === 'ar' ? 'المستوى' : 'Level'} {level} • {coins} {language === 'ar' ? 'كوين' : 'coins'}</p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" onClick={onLogout}>
+                  <Button onClick={onLogout} variant="outline">
                     {language === 'ar' ? 'تسجيل الخروج' : 'Logout'}
                   </Button>
-                </CardHeader>
-                <CardContent>
-                  <Progress value={(level % 10) * 10} className="h-2 rounded-full" />
-                </CardContent>
-              </Card>
+                </div>
+                <div className="mt-4">
+                  <div className="flex justify-between text-sm text-gray-600 mb-2">
+                    <span>{language === 'ar' ? 'التقدم في المستوى' : 'Level Progress'}</span>
+                    <span>{(level % 10) * 10}%</span>
+                  </div>
+                  <Progress value={(level % 10) * 10} className="h-3" />
+                </div>
+              </div>
 
-              {/* Quick Stats Section */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="bg-white/80 backdrop-blur-sm shadow-md">
-                  <CardHeader>
-                    <CardTitle className="text-sm font-bold">{language === 'ar' ? 'المهام المكتملة' : 'Tasks Completed'}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex items-center space-x-4">
-                    <PackageCheck className="w-5 h-5 text-emerald-500" />
-                    <span className="text-2xl font-bold">{userStats.tasksCompleted}</span>
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center">
+                      <div className="p-3 bg-green-100 rounded-full">
+                        <PackageCheck className="h-6 w-6 text-green-600" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm text-gray-600">{language === 'ar' ? 'المهام المكتملة' : 'Tasks Completed'}</p>
+                        <p className="text-2xl font-bold text-gray-900">{userStats.tasksCompleted}</p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-white/80 backdrop-blur-sm shadow-md">
-                  <CardHeader>
-                    <CardTitle className="text-sm font-bold">{language === 'ar' ? 'الوقت الموفر' : 'Time Saved'}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex items-center space-x-4">
-                    <ListChecks className="w-5 h-5 text-blue-500" />
-                    <span className="text-2xl font-bold">{userStats.timeSaved}h</span>
+                
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center">
+                      <div className="p-3 bg-blue-100 rounded-full">
+                        <ListChecks className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm text-gray-600">{language === 'ar' ? 'الوقت الموفر' : 'Time Saved'}</p>
+                        <p className="text-2xl font-bold text-gray-900">{userStats.timeSaved}h</p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-white/80 backdrop-blur-sm shadow-md">
-                  <CardHeader>
-                    <CardTitle className="text-sm font-bold">{language === 'ar' ? 'الكوينز' : 'Coins'}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex items-center space-x-4">
-                    <Store className="w-5 h-5 text-yellow-500" />
-                    <span className="text-2xl font-bold">{coins}</span>
+                
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center">
+                      <div className="p-3 bg-yellow-100 rounded-full">
+                        <Store className="h-6 w-6 text-yellow-600" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm text-gray-600">{language === 'ar' ? 'إجمالي الكوينز' : 'Total Coins'}</p>
+                        <p className="text-2xl font-bold text-gray-900">{coins}</p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Main Actions Section */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Button size="lg" className="h-16 bg-emerald-500 hover:bg-emerald-600 text-white font-bold" onClick={() => setCurrentView('tasks')}>
-                  {language === 'ar' ? 'إدارة المهام' : 'Manage Tasks'}
-                </Button>
-                <Button size="lg" className="h-16 bg-blue-500 hover:bg-blue-600 text-white font-bold" onClick={() => setCurrentView('game')}>
-                  {language === 'ar' ? 'العب واربح' : 'Play & Earn'}
-                </Button>
-                <Button size="lg" className="h-16 bg-teal-500 hover:bg-teal-600 text-white font-bold" onClick={() => setCurrentView('report')}>
-                  {language === 'ar' ? 'تقرير اليوم' : 'Daily Report'}
-                </Button>
-                <Button size="lg" className="h-16 bg-orange-500 hover:bg-orange-600 text-white font-bold" onClick={() => setCurrentView('store')}>
-                  {language === 'ar' ? 'المتجر' : 'Store'}
-                </Button>
-                <Button size="lg" className="h-16 bg-purple-500 hover:bg-purple-600 text-white font-bold" onClick={() => setCurrentView('analysis')}>
-                  {language === 'ar' ? 'تحليل الشخصية' : 'Personality Analysis'}
-                </Button>
+              {/* Action Buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setCurrentView('tasks')}>
+                  <CardContent className="p-6 text-center">
+                    <div className="p-4 bg-emerald-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                      <ListChecks className="h-8 w-8 text-emerald-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{language === 'ar' ? 'إدارة المهام' : 'Task Manager'}</h3>
+                    <p className="text-gray-600 text-sm">{language === 'ar' ? 'نظم مهامك وتابع تقدمك' : 'Organize your tasks and track progress'}</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setCurrentView('game')}>
+                  <CardContent className="p-6 text-center">
+                    <div className="p-4 bg-blue-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                      <span className="text-2xl">🎮</span>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{language === 'ar' ? 'العب واربح' : 'Play & Earn'}</h3>
+                    <p className="text-gray-600 text-sm">{language === 'ar' ? 'العب الألعاب واربح الكوينز' : 'Play games and earn coins'}</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setCurrentView('report')}>
+                  <CardContent className="p-6 text-center">
+                    <div className="p-4 bg-purple-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                      <PieChart className="h-8 w-8 text-purple-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{language === 'ar' ? 'التقرير اليومي' : 'Daily Report'}</h3>
+                    <p className="text-gray-600 text-sm">{language === 'ar' ? 'راجع إنجازاتك اليومية' : 'Review your daily achievements'}</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setCurrentView('store')}>
+                  <CardContent className="p-6 text-center">
+                    <div className="p-4 bg-orange-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                      <Store className="h-8 w-8 text-orange-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{language === 'ar' ? 'المتجر' : 'Store'}</h3>
+                    <p className="text-gray-600 text-sm">{language === 'ar' ? 'اشتري المكافآت بالكوينز' : 'Buy rewards with your coins'}</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setCurrentView('analysis')}>
+                  <CardContent className="p-6 text-center">
+                    <div className="p-4 bg-pink-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                      <BrainCircuit className="h-8 w-8 text-pink-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{language === 'ar' ? 'تحليل الشخصية' : 'Personality Analysis'}</h3>
+                    <p className="text-gray-600 text-sm">{language === 'ar' ? 'اكتشف نمط شخصيتك' : 'Discover your personality type'}</p>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
