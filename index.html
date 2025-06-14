@@ -6,130 +6,187 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>prodvanao - موقع الإنتاجية والتطوير الذاتي</title>
     <meta name="description" content="موقع ويب متكامل لزيادة الإنتاجية مع عناصر الألعاب والذكاء الاصطناعي">
-    <meta name="author" content="prodvanao">
     
-    <!-- Google Fonts for Arabic -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
-    <!-- CSS File -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Background Animation -->
+    <div class="animated-bg">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+    </div>
+
     <div class="container">
         <!-- Language Toggle -->
         <div class="language-toggle">
             <button id="langBtn" class="lang-btn">
-                <span class="globe-icon">🌐</span>
+                <span class="globe-icon">🌍</span>
                 <span id="langText">English</span>
             </button>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Welcome Section -->
-            <div id="welcomeSection" class="section">
-                <div class="hero-section">
-                    <div class="emoji">🚀</div>
-                    <h1 class="main-title">prodvanao</h1>
-                    <p class="subtitle" id="subtitle">رفيقك في رحلة الإنتاجية والنمو</p>
-                    <p class="description" id="description">انجز أكثر، اعتن بنفسك، واستمتع بالرحلة</p>
+        <!-- Welcome Section -->
+        <div id="welcomeSection" class="section active">
+            <div class="hero-container">
+                <div class="logo-section">
+                    <div class="logo-icon">🚀</div>
+                    <h1 class="brand-name">prodvanao</h1>
+                    <div class="brand-tagline">
+                        <p id="subtitle" class="subtitle">رفيقك في رحلة الإنتاجية والنجاح</p>
+                        <p id="description" class="description">حقق أهدافك • طور مهاراتك • استمتع بالرحلة</p>
+                    </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-gradient"></div>
+                <div class="main-card">
                     <div class="card-header">
-                        <h2 class="card-title" id="cardTitle">ابدأ رحلتك</h2>
-                        <p class="card-description" id="cardDescription">اختر طريقة الدخول المناسبة لك</p>
+                        <h2 id="cardTitle" class="card-title">ابدأ رحلتك نحو النجاح</h2>
+                        <p id="cardDescription" class="card-subtitle">اختر الطريقة المناسبة لك</p>
                     </div>
+
                     <div class="card-content">
-                        <button id="loginBtn" class="btn btn-primary">
-                            <span class="btn-icon">🔑</span>
+                        <button id="loginBtn" class="primary-btn">
+                            <span class="btn-icon">🔐</span>
                             <span id="loginText">تسجيل الدخول</span>
+                            <span class="btn-arrow">←</span>
                         </button>
                         
-                        <button id="trialBtn" class="btn btn-outline">
+                        <button id="trialBtn" class="secondary-btn">
                             <span class="btn-icon">⚡</span>
-                            <span id="trialText">جربني الآن (5 دقائق مجاناً)</span>
+                            <span id="trialText">جرب مجاناً (5 دقائق)</span>
+                            <span class="btn-arrow">←</span>
                         </button>
 
-                        <div class="info-text">
-                            <p id="infoText">💡 التجربة المجانية تتيح لك استكشاف جميع الميزات لمدة 5 دقائق</p>
+                        <div class="info-badge">
+                            <span class="info-icon">💡</span>
+                            <p id="infoText">استكشف جميع الميزات في التجربة المجانية</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="features">
-                    <div class="feature-icons">
-                        <span>🧠</span>
-                        <span>⏰</span>
-                        <span>🎮</span>
-                        <span>💎</span>
+                <div class="features-showcase">
+                    <div class="feature-item">
+                        <div class="feature-icon">🧠</div>
+                        <span id="aiFeature">ذكاء اصطناعي</span>
                     </div>
-                    <p class="feature-text" id="featureText">ذكاء اصطناعي • إدارة وقت • تجربة لعب • مكافآت فورية</p>
+                    <div class="feature-item">
+                        <div class="feature-icon">⏰</div>
+                        <span id="timeFeature">إدارة الوقت</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🎮</div>
+                        <span id="gameFeature">تجربة تفاعلية</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">💎</div>
+                        <span id="rewardFeature">مكافآت فورية</span>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Login Section -->
-            <div id="loginSection" class="section hidden">
-                <div class="login-card">
-                    <button id="backBtn" class="back-btn">← العودة</button>
-                    <h2 id="loginTitle">تسجيل الدخول</h2>
-                    <form id="loginForm">
-                        <div class="form-group">
+        <!-- Login Section -->
+        <div id="loginSection" class="section">
+            <div class="auth-container">
+                <button id="backBtn" class="back-button">
+                    <span>←</span>
+                    <span id="backText">العودة</span>
+                </button>
+
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h2 id="loginTitle">مرحباً بعودتك</h2>
+                        <p id="loginSubtitle">سجل دخولك لمتابعة رحلتك</p>
+                    </div>
+
+                    <form id="loginForm" class="auth-form">
+                        <div class="input-group">
                             <label for="email" id="emailLabel">البريد الإلكتروني</label>
-                            <input type="email" id="email" name="email" required>
+                            <input type="email" id="email" name="email" required placeholder="your@email.com">
                         </div>
-                        <div class="form-group">
+                        
+                        <div class="input-group">
                             <label for="password" id="passwordLabel">كلمة المرور</label>
-                            <input type="password" id="password" name="password" required>
+                            <input type="password" id="password" name="password" required placeholder="••••••••">
                         </div>
-                        <button type="submit" class="btn btn-primary full-width" id="submitBtn">دخول</button>
+
+                        <button type="submit" id="submitBtn" class="submit-btn">
+                            <span>دخول</span>
+                            <span class="btn-loading" id="loginLoader">⏳</span>
+                        </button>
                     </form>
                 </div>
             </div>
+        </div>
 
-            <!-- Dashboard Section -->
-            <div id="dashboardSection" class="section hidden">
-                <div class="dashboard">
-                    <div class="dashboard-header">
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="section">
+            <div class="dashboard-container">
+                <div class="dashboard-header">
+                    <div class="user-welcome">
                         <h2 id="welcomeUser">مرحباً بك!</h2>
-                        <button id="logoutBtn" class="btn btn-outline">تسجيل الخروج</button>
+                        <p id="welcomeSubtext">لنبدأ يوماً إنتاجياً جديداً</p>
                     </div>
-                    <div class="dashboard-content">
-                        <div class="stats-card">
-                            <h3 id="statsTitle">إحصائياتك</h3>
-                            <div class="stats-grid">
-                                <div class="stat-item">
-                                    <span class="stat-number">0</span>
-                                    <span class="stat-label" id="tasksLabel">المهام المكتملة</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-number">0</span>
-                                    <span class="stat-label" id="pointsLabel">النقاط</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-number">1</span>
-                                    <span class="stat-label" id="levelLabel">المستوى</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-number">0</span>
-                                    <span class="stat-label" id="streakLabel">الإنجاز المتتالي</span>
-                                </div>
+                    <button id="logoutBtn" class="logout-btn">
+                        <span>تسجيل الخروج</span>
+                        <span>🚪</span>
+                    </button>
+                </div>
+
+                <div class="stats-container">
+                    <h3 id="statsTitle">إحصائياتك الشخصية</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card stat-tasks">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="tasksCount">0</span>
+                                <span class="stat-label" id="tasksLabel">المهام المكتملة</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card stat-points">
+                            <div class="stat-icon">⭐</div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="pointsCount">0</span>
+                                <span class="stat-label" id="pointsLabel">النقاط</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card stat-level">
+                            <div class="stat-icon">🏆</div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="levelCount">1</span>
+                                <span class="stat-label" id="levelLabel">المستوى</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card stat-streak">
+                            <div class="stat-icon">🔥</div>
+                            <div class="stat-content">
+                                <span class="stat-number" id="streakCount">0</span>
+                                <span class="stat-label" id="streakLabel">أيام متتالية</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Toast Notification -->
-        <div id="toast" class="toast hidden">
-            <div class="toast-content">
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="toast-content">
+            <div class="toast-icon" id="toastIcon">ℹ️</div>
+            <div class="toast-text">
                 <div class="toast-title" id="toastTitle"></div>
-                <div class="toast-description" id="toastDescription"></div>
+                <div class="toast-message" id="toastMessage"></div>
             </div>
+            <button class="toast-close" onclick="hideToast()">×</button>
         </div>
     </div>
 
