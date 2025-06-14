@@ -70,7 +70,7 @@ const Index = () => {
         <div className="text-center mb-8 animate-fade-in">
           <div className="text-6xl mb-4">🚀</div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
-            Prodvana
+            prodvanao
           </h1>
           <p className="text-xl text-gray-600 mb-2">
             {language === 'ar' ? 'رفيقك في رحلة الإنتاجية والنمو' : 'Your Productivity & Growth Companion'}
