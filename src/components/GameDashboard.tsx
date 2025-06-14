@@ -94,6 +94,10 @@ const GameDashboard = ({ user, language, onLogout }: GameDashboardProps) => {
     weeklyProgress: userStats.timeSaved * 7,
     currentStreak: Math.floor(userStats.tasksCompleted / 3),
     longestStreak: Math.floor(userStats.tasksCompleted / 2),
+    mood: 'جيد',
+    sessionsCompleted: Math.floor(userStats.tasksCompleted / 2),
+    focusScore: userStats.accuracy,
+    healthScore: Math.min(100, userStats.timeSaved * 10),
     weeklyData: [
       { day: 'السبت', hours: userStats.timeSaved * 0.8, coins: 15 },
       { day: 'الأحد', hours: userStats.timeSaved * 1.2, coins: 20 },
