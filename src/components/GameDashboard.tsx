@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,7 +28,7 @@ const GameDashboard = ({ user, language, onLogout }: GameDashboardProps) => {
   const [level, setLevel] = useState(1);
   const [coins, setCoins] = useState(50);
   const [currentView, setCurrentView] = useState<'main' | 'tasks' | 'game' | 'report' | 'store' | 'analysis'>('main');
-  const [gameType, setGameType] = useState<'typing' | 'math'>('typing');
+  const [gameType, setGameType] = useState<'farm' | 'fishing'>('farm');
   const [userStats, setUserStats] = useState<UserStats>({
     tasksCompleted: 0,
     timeSaved: 0,
@@ -79,6 +80,31 @@ const GameDashboard = ({ user, language, onLogout }: GameDashboardProps) => {
     }
   };
 
+  // Create expanded userStats for DailyReport component
+  const expandedUserStats = {
+    todayWorkHours: userStats.timeSaved,
+    todayFocusTime: Math.floor(userStats.timeSaved * 0.8),
+    todayBreakTime: Math.floor(userStats.timeSaved * 0.2),
+    todayWaterGlasses: Math.floor(userStats.timeSaved * 2),
+    completedTasks: userStats.tasksCompleted,
+    totalTasks: userStats.tasksCompleted + 3,
+    todayCoinsEarned: coins - 50,
+    productivity: userStats.accuracy,
+    weeklyGoal: 40,
+    weeklyProgress: userStats.timeSaved * 7,
+    currentStreak: Math.floor(userStats.tasksCompleted / 3),
+    longestStreak: Math.floor(userStats.tasksCompleted / 2),
+    weeklyData: [
+      { day: 'السبت', hours: userStats.timeSaved * 0.8, coins: 15 },
+      { day: 'الأحد', hours: userStats.timeSaved * 1.2, coins: 20 },
+      { day: 'الاثنين', hours: userStats.timeSaved * 0.9, coins: 18 },
+      { day: 'الثلاثاء', hours: userStats.timeSaved * 1.1, coins: 22 },
+      { day: 'الأربعاء', hours: userStats.timeSaved * 0.7, coins: 12 },
+      { day: 'الخميس', hours: userStats.timeSaved * 1.0, coins: 25 },
+      { day: 'الجمعة', hours: userStats.timeSaved, coins: coins - 50 },
+    ]
+  };
+
   const renderCurrentView = () => {
     switch (currentView) {
       case 'tasks':
@@ -99,7 +125,7 @@ const GameDashboard = ({ user, language, onLogout }: GameDashboardProps) => {
             coins={coins}
             level={level}
             user={user}
-            userStats={userStats}
+            userStats={expandedUserStats}
           />
         );
       case 'store':
