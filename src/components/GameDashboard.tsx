@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Timer, Gift, User, Calendar } from 'lucide-react';
+import { Timer, Gift, User, Calendar, ShoppingBag } from 'lucide-react';
 import TaskManager from '@/components/TaskManager';
 import GameSession from '@/components/GameSession';
 import DailyReport from '@/components/DailyReport';
+import GameStore from '@/components/GameStore';
 import { useToast } from '@/hooks/use-toast';
 
 interface GameDashboardProps {
@@ -15,7 +16,7 @@ interface GameDashboardProps {
 }
 
 const GameDashboard = ({ user, onLogout }: GameDashboardProps) => {
-  const [currentTab, setCurrentTab] = useState<'home' | 'session' | 'tasks' | 'report'>('home');
+  const [currentTab, setCurrentTab] = useState<'home' | 'session' | 'tasks' | 'report' | 'store'>('home');
   const [gameType, setGameType] = useState<'farm' | 'fishing'>('farm');
   const [coins, setCoins] = useState(150);
   const [level, setLevel] = useState(1);
@@ -51,6 +52,10 @@ const GameDashboard = ({ user, onLogout }: GameDashboardProps) => {
     }
   };
 
+  const spendCoins = (amount: number) => {
+    setCoins(prev => Math.max(0, prev - amount));
+  };
+
   if (currentTab === 'session') {
     return (
       <GameSession 
@@ -71,6 +76,10 @@ const GameDashboard = ({ user, onLogout }: GameDashboardProps) => {
 
   if (currentTab === 'report') {
     return <DailyReport onBack={() => setCurrentTab('home')} coins={coins} level={level} />;
+  }
+
+  if (currentTab === 'store') {
+    return <GameStore coins={coins} onPurchase={spendCoins} onBack={() => setCurrentTab('home')} />;
   }
 
   return (
@@ -160,7 +169,7 @@ const GameDashboard = ({ user, onLogout }: GameDashboardProps) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="grid md:grid-cols-4 gap-4">
+        <div className="grid md:grid-cols-5 gap-4">
           <Button 
             onClick={startSession}
             className="h-16 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg transition-all duration-300 hover:scale-105"
@@ -181,6 +190,18 @@ const GameDashboard = ({ user, onLogout }: GameDashboardProps) => {
             <div className="text-right">
               <div className="font-bold">مهام اليوم</div>
               <div className="text-xs opacity-80">نظم وقتك</div>
+            </div>
+          </Button>
+
+          <Button 
+            onClick={() => setCurrentTab('store')}
+            variant="outline"
+            className="h-16 border-2 border-yellow-200 hover:border-yellow-300 hover:bg-yellow-50"
+          >
+            <ShoppingBag className="w-6 h-6 ml-2" />
+            <div className="text-right">
+              <div className="font-bold">المتجر</div>
+              <div className="text-xs opacity-80">طور شخصيتك</div>
             </div>
           </Button>
 
