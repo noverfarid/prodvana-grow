@@ -99,13 +99,13 @@ const GameDashboard = ({ user, language, onLogout }: GameDashboardProps) => {
     focusScore: userStats.accuracy,
     healthScore: Math.min(100, userStats.timeSaved * 10),
     weeklyData: [
-      { day: 'السبت', hours: userStats.timeSaved * 0.8, coins: 15 },
-      { day: 'الأحد', hours: userStats.timeSaved * 1.2, coins: 20 },
-      { day: 'الاثنين', hours: userStats.timeSaved * 0.9, coins: 18 },
-      { day: 'الثلاثاء', hours: userStats.timeSaved * 1.1, coins: 22 },
-      { day: 'الأربعاء', hours: userStats.timeSaved * 0.7, coins: 12 },
-      { day: 'الخميس', hours: userStats.timeSaved * 1.0, coins: 25 },
-      { day: 'الجمعة', hours: userStats.timeSaved, coins: coins - 50 },
+      { day: 'السبت', hours: userStats.timeSaved * 0.8, productivity: userStats.accuracy, coins: 15 },
+      { day: 'الأحد', hours: userStats.timeSaved * 1.2, productivity: userStats.accuracy, coins: 20 },
+      { day: 'الاثنين', hours: userStats.timeSaved * 0.9, productivity: userStats.accuracy, coins: 18 },
+      { day: 'الثلاثاء', hours: userStats.timeSaved * 1.1, productivity: userStats.accuracy, coins: 22 },
+      { day: 'الأربعاء', hours: userStats.timeSaved * 0.7, productivity: userStats.accuracy, coins: 12 },
+      { day: 'الخميس', hours: userStats.timeSaved * 1.0, productivity: userStats.accuracy, coins: 25 },
+      { day: 'الجمعة', hours: userStats.timeSaved, productivity: userStats.accuracy, coins: coins - 50 },
     ]
   };
 
