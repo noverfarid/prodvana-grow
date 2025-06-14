@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface TaskManagerProps {
   onBack: () => void;
+  language?: 'ar' | 'en';
 }
 
 interface Task {
@@ -18,11 +19,11 @@ interface Task {
   priority: 'high' | 'medium' | 'low';
 }
 
-const TaskManager = ({ onBack }: TaskManagerProps) => {
+const TaskManager = ({ onBack, language = 'ar' }: TaskManagerProps) => {
   const [tasks, setTasks] = useState<Task[]>([
-    { id: '1', title: 'مراجعة مشروع العمل', time: '09:00', completed: false, priority: 'high' },
-    { id: '2', title: 'قراءة الفصل الثاني', time: '11:30', completed: false, priority: 'medium' },
-    { id: '3', title: 'تمارين الرياضة', time: '18:00', completed: true, priority: 'low' },
+    { id: '1', title: language === 'ar' ? 'مراجعة مشروع العمل' : 'Review work project', time: '09:00 AM', completed: false, priority: 'high' },
+    { id: '2', title: language === 'ar' ? 'قراءة الفصل الثاني' : 'Read chapter two', time: '11:30 AM', completed: false, priority: 'medium' },
+    { id: '3', title: language === 'ar' ? 'تمارين الرياضة' : 'Exercise', time: '06:00 PM', completed: true, priority: 'low' },
   ]);
   const [newTask, setNewTask] = useState('');
   const [newTime, setNewTime] = useState('');
@@ -31,16 +32,28 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
   const [editTime, setEditTime] = useState('');
   const { toast } = useToast();
 
+  const formatTimeTo12Hour = (time24: string) => {
+    const [hours, minutes] = time24.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+    return `${displayHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
+
   const addTask = () => {
     if (newTask.trim() && newTime) {
+      const formattedTime = formatTimeTo12Hour(newTime);
       const task: Task = {
         id: Date.now().toString(),
         title: newTask.trim(),
-        time: newTime,
+        time: formattedTime,
         completed: false,
         priority: 'medium'
       };
-      setTasks(prev => [...prev, task].sort((a, b) => a.time.localeCompare(b.time)));
+      setTasks(prev => [...prev, task].sort((a, b) => {
+        const timeA = convertTo24Hour(a.time);
+        const timeB = convertTo24Hour(b.time);
+        return timeA.localeCompare(timeB);
+      }));
       setNewTask('');
       setNewTime('');
       
@@ -48,14 +61,29 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
       scheduleTaskReminders(task);
       
       toast({
-        title: "✅ تمت الإضافة",
-        description: "تم إضافة المهمة بنجاح مع تنبيهات كل 12 ساعة",
+        title: language === 'ar' ? "✅ تمت الإضافة" : "✅ Added Successfully",
+        description: language === 'ar' ? "تم إضافة المهمة بنجاح مع تنبيهات كل 12 ساعة" : "Task added successfully with 12-hour reminders",
       });
     }
   };
 
+  const convertTo24Hour = (time12: string) => {
+    const [time, period] = time12.split(' ');
+    const [hours, minutes] = time.split(':').map(Number);
+    let hour24 = hours;
+    
+    if (period === 'PM' && hours !== 12) {
+      hour24 += 12;
+    } else if (period === 'AM' && hours === 12) {
+      hour24 = 0;
+    }
+    
+    return `${hour24.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  };
+
   const scheduleTaskReminders = (task: Task) => {
-    const [hours, minutes] = task.time.split(':').map(Number);
+    const taskTime24 = convertTo24Hour(task.time);
+    const [hours, minutes] = taskTime24.split(':').map(Number);
     const taskDate = new Date();
     taskDate.setHours(hours, minutes, 0, 0);
     
@@ -73,8 +101,8 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
     if (morningReminder > now) {
       setTimeout(() => {
         toast({
-          title: "🌅 تذكير صباحي",
-          description: `لا تنس: ${task.title}`,
+          title: language === 'ar' ? "🌅 تذكير صباحي" : "🌅 Morning Reminder",
+          description: language === 'ar' ? `لا تنس: ${task.title}` : `Don't forget: ${task.title}`,
           duration: 10000,
         });
       }, morningReminder.getTime() - now.getTime());
@@ -84,8 +112,8 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
     if (eveningReminder > now) {
       setTimeout(() => {
         toast({
-          title: "🌙 تذكير مسائي", 
-          description: `تذكير: ${task.title}`,
+          title: language === 'ar' ? "🌙 تذكير مسائي" : "🌙 Evening Reminder", 
+          description: language === 'ar' ? `تذكير: ${task.title}` : `Reminder: ${task.title}`,
           duration: 10000,
         });
       }, eveningReminder.getTime() - now.getTime());
@@ -95,24 +123,30 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
   const startEditTask = (task: Task) => {
     setEditingTask(task);
     setEditTitle(task.title);
-    setEditTime(task.time);
+    // تحويل الوقت للصيغة 24 ساعة لحقل الإدخال
+    setEditTime(convertTo24Hour(task.time));
   };
 
   const saveEditTask = () => {
     if (editingTask && editTitle.trim() && editTime) {
+      const formattedTime = formatTimeTo12Hour(editTime);
       setTasks(prev => prev.map(task => 
         task.id === editingTask.id 
-          ? { ...task, title: editTitle.trim(), time: editTime }
+          ? { ...task, title: editTitle.trim(), time: formattedTime }
           : task
-      ).sort((a, b) => a.time.localeCompare(b.time)));
+      ).sort((a, b) => {
+        const timeA = convertTo24Hour(a.time);
+        const timeB = convertTo24Hour(b.time);
+        return timeA.localeCompare(timeB);
+      }));
       
       setEditingTask(null);
       setEditTitle('');
       setEditTime('');
       
       toast({
-        title: "✏️ تم التحديث",
-        description: "تم تحديث المهمة بنجاح",
+        title: language === 'ar' ? "✏️ تم التحديث" : "✏️ Updated Successfully",
+        description: language === 'ar' ? "تم تحديث المهمة بنجاح" : "Task updated successfully",
       });
     }
   };
@@ -132,8 +166,8 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
   const deleteTask = (id: string) => {
     setTasks(prev => prev.filter(task => task.id !== id));
     toast({
-      title: "🗑️ تم الحذف",
-      description: "تم حذف المهمة",
+      title: language === 'ar' ? "🗑️ تم الحذف" : "🗑️ Deleted",
+      description: language === 'ar' ? "تم حذف المهمة" : "Task deleted",
     });
   };
 
@@ -146,6 +180,13 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
     }
   };
 
+  const getPriorityLabel = (priority: string) => {
+    if (language === 'en') {
+      return priority === 'high' ? 'High' : priority === 'medium' ? 'Medium' : 'Low';
+    }
+    return priority === 'high' ? 'عالية' : priority === 'medium' ? 'متوسطة' : 'منخفضة';
+  };
+
   const completedTasks = tasks.filter(task => task.completed).length;
   const totalTasks = tasks.length;
 
@@ -153,13 +194,17 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 p-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center mb-6">
-          <Button variant="ghost" onClick={onBack} className="ml-4">
-            <ArrowDown className="w-4 h-4 ml-2 rotate-90" />
-            العودة
+          <Button variant="ghost" onClick={onBack} className={language === 'ar' ? "ml-4" : "mr-4"}>
+            <ArrowDown className={`w-4 h-4 ${language === 'ar' ? 'ml-2' : 'mr-2'} rotate-90`} />
+            {language === 'ar' ? 'العودة' : 'Back'}
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">مهام اليوم</h1>
-            <p className="text-gray-600">نظم وقتك وحقق أهدافك</p>
+            <h1 className="text-2xl font-bold text-gray-800">
+              {language === 'ar' ? 'مهام اليوم' : "Today's Tasks"}
+            </h1>
+            <p className="text-gray-600">
+              {language === 'ar' ? 'نظم وقتك وحقق أهدافك' : 'Organize your time and achieve your goals'}
+            </p>
           </div>
         </div>
 
@@ -168,9 +213,14 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold mb-2">إنجاز اليوم</h2>
+                <h2 className="text-xl font-bold mb-2">
+                  {language === 'ar' ? 'إنجاز اليوم' : "Today's Progress"}
+                </h2>
                 <p className="text-emerald-100">
-                  أكملت {completedTasks} من {totalTasks} مهام
+                  {language === 'ar' 
+                    ? `أكملت ${completedTasks} من ${totalTasks} مهام`
+                    : `Completed ${completedTasks} of ${totalTasks} tasks`
+                  }
                 </p>
                 <div className="w-full bg-white/20 rounded-full h-2 mt-3">
                   <div 
@@ -188,17 +238,17 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Calendar className="w-5 h-5 ml-2" />
-              إضافة مهمة جديدة
+              <Calendar className={`w-5 h-5 ${language === 'ar' ? 'ml-2' : 'mr-2'}`} />
+              {language === 'ar' ? 'إضافة مهمة جديدة' : 'Add New Task'}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex space-x-reverse space-x-3">
+            <div className={`flex ${language === 'ar' ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
               <Input
                 value={newTask}
                 onChange={(e) => setNewTask(e.target.value)}
-                placeholder="اكتب مهمتك هنا..."
-                className="flex-1 text-right"
+                placeholder={language === 'ar' ? "اكتب مهمتك هنا..." : "Write your task here..."}
+                className={`flex-1 ${language === 'ar' ? 'text-right' : 'text-left'}`}
                 onKeyPress={(e) => e.key === 'Enter' && addTask()}
               />
               <Input
@@ -208,7 +258,7 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
                 className="w-32"
               />
               <Button onClick={addTask} className="bg-emerald-500 hover:bg-emerald-600">
-                إضافة
+                {language === 'ar' ? 'إضافة' : 'Add'}
               </Button>
             </div>
           </CardContent>
@@ -217,14 +267,14 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
         {/* Tasks List */}
         <Card>
           <CardHeader>
-            <CardTitle>قائمة المهام</CardTitle>
+            <CardTitle>{language === 'ar' ? 'قائمة المهام' : 'Task List'}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {tasks.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <div className="text-4xl mb-2">📝</div>
-                  <p>لا توجد مهام بعد. أضف مهمتك الأولى!</p>
+                  <p>{language === 'ar' ? 'لا توجد مهام بعد. أضف مهمتك الأولى!' : 'No tasks yet. Add your first task!'}</p>
                 </div>
               ) : (
                 tasks.map((task) => (
@@ -237,7 +287,7 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
                     }`}
                   >
                     {editingTask?.id === task.id ? (
-                      <div className="flex items-center space-x-reverse space-x-3 flex-1">
+                      <div className={`flex items-center ${language === 'ar' ? 'space-x-reverse space-x-3' : 'space-x-3'} flex-1`}>
                         <input
                           type="checkbox"
                           checked={task.completed}
@@ -248,10 +298,10 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
                           <Input
                             value={editTitle}
                             onChange={(e) => setEditTitle(e.target.value)}
-                            className="text-right"
-                            placeholder="عنوان المهمة"
+                            className={language === 'ar' ? 'text-right' : 'text-left'}
+                            placeholder={language === 'ar' ? "عنوان المهمة" : "Task title"}
                           />
-                          <div className="flex items-center space-x-reverse space-x-2">
+                          <div className={`flex items-center ${language === 'ar' ? 'space-x-reverse space-x-2' : 'space-x-2'}`}>
                             <Input
                               type="time"
                               value={editTime}
@@ -259,17 +309,17 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
                               className="w-32"
                             />
                             <Button size="sm" onClick={saveEditTask} className="bg-green-500 hover:bg-green-600">
-                              حفظ
+                              {language === 'ar' ? 'حفظ' : 'Save'}
                             </Button>
                             <Button size="sm" variant="ghost" onClick={cancelEdit}>
-                              إلغاء
+                              {language === 'ar' ? 'إلغاء' : 'Cancel'}
                             </Button>
                           </div>
                         </div>
                       </div>
                     ) : (
                       <>
-                        <div className="flex items-center space-x-reverse space-x-3 flex-1">
+                        <div className={`flex items-center ${language === 'ar' ? 'space-x-reverse space-x-3' : 'space-x-3'} flex-1`}>
                           <input
                             type="checkbox"
                             checked={task.completed}
@@ -280,16 +330,16 @@ const TaskManager = ({ onBack }: TaskManagerProps) => {
                             <h3 className={`font-medium ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
                               {task.title}
                             </h3>
-                            <div className="flex items-center space-x-reverse space-x-2 mt-1">
+                            <div className={`flex items-center ${language === 'ar' ? 'space-x-reverse space-x-2' : 'space-x-2'} mt-1`}>
                               <Clock className="w-4 h-4 text-gray-400" />
                               <span className="text-sm text-gray-500">{task.time}</span>
                               <span className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(task.priority)}`}>
-                                {task.priority === 'high' ? 'عالية' : task.priority === 'medium' ? 'متوسطة' : 'منخفضة'}
+                                {getPriorityLabel(task.priority)}
                               </span>
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-reverse space-x-2">
+                        <div className={`flex items-center ${language === 'ar' ? 'space-x-reverse space-x-2' : 'space-x-2'}`}>
                           <Button
                             variant="ghost"
                             size="sm"
